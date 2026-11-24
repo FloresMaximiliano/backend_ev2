@@ -1,16 +1,22 @@
 package org.example.ev2_backend.config;
 
-import org.springframework.boot.CommandLineRunner;
 import org.example.ev2_backend.model.Lote;
+import org.example.ev2_backend.model.Usuario;
 import org.example.ev2_backend.repository.LoteRepository;
+import org.example.ev2_backend.repository.UsuarioRepository;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 public class DataLoader {
 
     @Bean
-    CommandLineRunner cargarDatosIniciales(LoteRepository loteRepository) {
+    CommandLineRunner cargarDatosIniciales(
+            LoteRepository loteRepository,
+            UsuarioRepository usuarioRepository,
+            PasswordEncoder passwordEncoder) {
         return args -> {
             if (loteRepository.count() == 0) {
                 Lote l1 = new Lote();
@@ -46,6 +52,12 @@ public class DataLoader {
                 loteRepository.save(l1);
                 loteRepository.save(l2);
                 loteRepository.save(l3);
+            }
+
+            if (usuarioRepository.count() == 0) {
+                usuarioRepository.save(new Usuario("admin", passwordEncoder.encode("admin123"), "Administrador General", "ADMIN"));
+                usuarioRepository.save(new Usuario("supervisor", passwordEncoder.encode("super123"), "Supervisor de Planta", "SUPERVISOR"));
+                usuarioRepository.save(new Usuario("inspector", passwordEncoder.encode("insp123"), "Inspector de Calidad", "INSPECTOR"));
             }
         };
     }
